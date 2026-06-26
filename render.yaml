@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: aura-streetwear-store
+    env: python
+    buildCommand: pip install -r requirements.txt && pip install email-validator
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+        placeholder: "Optional: Your OpenAI API Key"
+      - key: GEMINI_API_KEY
+        sync: false
+        placeholder: "Optional: Your Gemini API Key"
+      - key: RETELL_API_KEY
+        sync: false
+        placeholder: "Optional: Your Retell AI API Key"
+      - key: RETELL_AGENT_ID
+        sync: false
+        placeholder: "Optional: Your Retell AI Agent ID"
+      - key: HUBSPOT_ACCESS_TOKEN
+        sync: false
+        placeholder: "Optional: Your HubSpot CRM Access Token"
