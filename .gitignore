@@ -1,0 +1,13 @@
+# Python environment
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Local database
+*.db
+ecommerce.db
+
+# Private environment configurations
+.env

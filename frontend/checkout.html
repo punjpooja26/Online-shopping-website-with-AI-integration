@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Securely — Aura Fashion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .search-suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .suggestion-item {
+            transition: background 0.2s ease;
+        }
+        .suggestion-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5 my-3 flex-grow-1" id="checkoutWrapper">
+        <h1 class="fw-bold text-white text-uppercase tracking-wider mb-5">Checkout Authorization</h1>
+
+        <div class="row d-none" id="checkoutContent">
+            <!-- Left: Shipping and Payment Form -->
+            <div class="col-lg-7 mb-4">
+                <div class="card glass-card p-4 border border-secondary shadow-sm">
+                    <h3 class="fw-bold text-info mb-4">Delivery & Payment Credentials</h3>
+                    
+                    <form id="checkoutForm" onsubmit="event.preventDefault();">
+                        <!-- Shipping Address -->
+                        <div class="mb-4">
+                            <label for="shippingAddress" class="form-label text-white-50">Shipping Destination Address</label>
+                            <textarea id="shippingAddress" class="form-control bg-dark text-white border-secondary rounded-4" rows="4" placeholder="Enter street, city, postal code, and country coords..." required></textarea>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="mb-4">
+                            <label class="form-label text-white-50">Select Payment Protocol</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="payCOD" value="COD" checked>
+                                <label class="form-check-label text-white" for="payCOD">
+                                    Cash on Delivery (COD)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="payCard" value="Credit Card">
+                                <label class="form-check-label text-white" for="payCard">
+                                    Credit / Debit Card (Stripe Demo)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="payUPI" value="UPI">
+                                <label class="form-check-label text-white" for="payUPI">
+                                    UPI (Unified Payments Interface)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="payPaypal" value="PayPal">
+                                <label class="form-check-label text-white" for="payPaypal">
+                                    PayPal Gateway
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Card Fields placeholder, visible when Card is selected -->
+                        <div id="cardDetailsBox" class="p-3 border border-secondary rounded-4 bg-dark mb-4 d-none">
+                            <div class="mb-3">
+                                <label for="cardNum" class="form-label text-white-50">Card Number</label>
+                                <input type="text" id="cardNum" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="0000 0000 0000 0000">
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label for="cardExp" class="form-label text-white-50">Expiration</label>
+                                    <input type="text" id="cardExp" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="MM/YY">
+                                </div>
+                                <div class="col-6">
+                                    <label for="cardCVV" class="form-label text-white-50">CVV</label>
+                                    <input type="password" id="cardCVV" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="•••">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPI Fields placeholder, visible when UPI is selected -->
+                        <div id="upiDetailsBox" class="p-3 border border-secondary rounded-4 bg-dark mb-4 d-none">
+                            <div class="mb-0">
+                                <label for="upiId" class="form-label text-white-50">UPI ID / Virtual Payment Address</label>
+                                <input type="text" id="upiId" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="username@bank">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-info w-100 rounded-pill text-dark fw-bold py-3 fs-5" id="submitOrderBtn">
+                            Authorize Registry Sync
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Order Review -->
+            <div class="col-lg-5 mb-4">
+                <div class="card glass-card p-4 border border-secondary shadow-sm">
+                    <h4 class="fw-bold text-white mb-4 text-uppercase tracking-wider">Garments Review</h4>
+                    
+                    <div id="checkoutItemsList" class="d-flex flex-column gap-3 mb-4" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Populate dynamic items list -->
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 border-top border-secondary pt-3">
+                        <span class="text-white-50">Subtotal</span>
+                        <span class="text-white" id="checkoutSubtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 d-none" id="checkoutDiscountRow">
+                        <span class="text-white-50" id="checkoutDiscountLabel">Discount</span>
+                        <span class="text-danger" id="checkoutDiscount">-$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white-50">Network Tax (5%)</span>
+                        <span class="text-white" id="checkoutTax">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white-50">Shipping Fee</span>
+                        <span class="text-white" id="checkoutShipping">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-0 border-top border-secondary pt-3">
+                        <span class="fs-5 fw-bold text-white">Order Total</span>
+                        <strong class="fs-4 text-info" id="checkoutTotal">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        let calculatedTotalVal = 0.0;
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            // Bind selectors
+            const payCard = document.getElementById("payCard");
+            const payCOD = document.getElementById("payCOD");
+            const payUPI = document.getElementById("payUPI");
+            const payPaypal = document.getElementById("payPaypal");
+            
+            const cardBox = document.getElementById("cardDetailsBox");
+            const upiBox = document.getElementById("upiDetailsBox");
+
+            function toggleDetailsBoxes() {
+                cardBox.classList.add("d-none");
+                upiBox.classList.add("d-none");
+                
+                if (payCard.checked) {
+                    cardBox.classList.remove("d-none");
+                } else if (payUPI.checked) {
+                    upiBox.classList.remove("d-none");
+                }
+            }
+
+            payCard.addEventListener("change", toggleDetailsBoxes);
+            payCOD.addEventListener("change", toggleDetailsBoxes);
+            payUPI.addEventListener("change", toggleDetailsBoxes);
+            payPaypal.addEventListener("change", toggleDetailsBoxes);
+
+            await loadCheckoutSummary();
+
+            document.getElementById("checkoutForm").addEventListener("submit", submitCheckout);
+        });
+
+        async function loadCheckoutSummary() {
+            const list = document.getElementById("checkoutItemsList");
+            try {
+                const res = await fetch("/api/cart/", { headers: getHeaders() });
+                if (res.ok) {
+                    const cartItems = await res.json();
+                    if (cartItems.length === 0) {
+                        alert("Your shopping cart is empty.");
+                        window.location.href = "cart.html";
+                        return;
+                    }
+
+                    document.getElementById("checkoutContent").classList.remove("d-none");
+                    list.innerHTML = "";
+                    let subtotal = 0;
+
+                    cartItems.forEach(item => {
+                        const lineTotal = item.product.price * item.quantity;
+                        subtotal += lineTotal;
+
+                        list.innerHTML += `
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded bg-dark border border-secondary p-1" style="width: 40px; height: 40px; flex-shrink: 0;">
+                                    <img src="${item.product.image_url}" class="img-fluid h-100 w-100 object-fit-contain" alt="">
+                                </div>
+                                <div class="text-white-50" style="font-size: 0.9rem;">
+                                    <strong class="text-white">${item.product.name}</strong> x ${item.quantity}
+                                </div>
+                            </div>
+                            <span class="fw-bold text-white" style="font-size: 0.9rem;">$${lineTotal.toFixed(2)}</span>
+                        </div>
+                        `;
+                    });
+
+                    // Retrieve coupon code discount from sessionStorage
+                    let discount = 0.0;
+                    const coupon = sessionStorage.getItem("aura_active_coupon");
+                    if (coupon) {
+                        if (coupon === "SAVE10") {
+                            discount = subtotal * 0.10;
+                        } else if (coupon === "AURA20") {
+                            discount = subtotal * 0.20;
+                        } else if (coupon === "WELCOME50") {
+                            discount = subtotal * 0.50;
+                        }
+                    }
+
+                    const subtotalAfterDiscount = subtotal - discount;
+                    const tax = subtotalAfterDiscount * 0.05;
+                    const shipping = subtotalAfterDiscount >= 100.0 ? 0.0 : 10.0;
+                    const total = subtotalAfterDiscount + tax + shipping;
+                    calculatedTotalVal = total;
+
+                    document.getElementById("checkoutSubtotal").textContent = `$${subtotal.toFixed(2)}`;
+                    
+                    const discRow = document.getElementById("checkoutDiscountRow");
+                    if (discount > 0) {
+                        document.getElementById("checkoutDiscount").textContent = `-$${discount.toFixed(2)}`;
+                        document.getElementById("checkoutDiscountLabel").textContent = `Discount (${coupon})`;
+                        discRow.classList.remove("d-none");
+                    } else {
+                        discRow.classList.add("d-none");
+                    }
+
+                    document.getElementById("checkoutTax").textContent = `$${tax.toFixed(2)}`;
+                    document.getElementById("checkoutShipping").textContent = shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`;
+                    document.getElementById("checkoutTotal").textContent = `$${total.toFixed(2)}`;
+                }
+            } catch (e) {
+                console.error("Checkout summary load failed:", e);
+            }
+        }
+
+        async function submitCheckout() {
+            const btn = document.getElementById("submitOrderBtn");
+            btn.setAttribute("disabled", "true");
+            btn.textContent = "Authorizing transaction...";
+
+            const shipping_address = document.getElementById("shippingAddress").value;
+            const payment_method = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const coupon_code = sessionStorage.getItem("aura_active_coupon") || null;
+
+            // Log checkout submit to visitor analytics
+            await logVisitorActivity("checkout_complete");
+
+            try {
+                const res = await fetch("/api/orders/", {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        shipping_address,
+                        payment_method,
+                        total_amount: calculatedTotalVal,
+                        coupon_code: coupon_code
+                    })
+                });
+                if (res.ok) {
+                    const order = await res.json();
+                    
+                    // Clear applied coupon on success
+                    sessionStorage.removeItem("aura_active_coupon");
+                    updateBadges();
+                    window.location.href = `order-success.html?order_id=${order.id}`;
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Checkout submission failed.");
+                    btn.removeAttribute("disabled");
+                    btn.textContent = "Authorize Registry Sync";
+                }
+            } catch (e) {
+                alert("Network connectivity failure submitting checkout.");
+                btn.removeAttribute("disabled");
+                btn.textContent = "Authorize Registry Sync";
+            }
+        }
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>

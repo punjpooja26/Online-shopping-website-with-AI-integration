@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Profile — Aura Fashion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container py-5 my-3 flex-grow-1" id="profileWrapper">
+        <h1 class="fw-bold text-white text-uppercase tracking-wider mb-5">Customer Coordinates</h1>
+
+        <div class="row">
+            <!-- Left Side: Profile Details Card -->
+            <div class="col-md-5 mb-4">
+                <div class="card glass-card p-5 border border-secondary shadow-sm text-center">
+                    <div class="rounded-circle bg-info text-dark d-flex align-items-center justify-content-center fw-bold mx-auto mb-4" id="profileInitials" style="width: 80px; height: 80px; font-size: 2rem;">
+                        AU
+                    </div>
+                    <h3 class="fw-bold text-white mb-2" id="profileName">Loading User...</h3>
+                    <p class="text-info mb-4" id="profileEmail">email@address.com</p>
+                    
+                    <div class="p-3 bg-dark border border-secondary rounded-4 text-start" style="font-size: 0.9rem;">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-white-50">Customer ID:</span>
+                            <span class="text-white fw-bold" id="profileId">ID</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-white-50">Account Status:</span>
+                            <span class="text-success fw-bold">Active</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-0">
+                            <span class="text-white-50">Sync Date:</span>
+                            <span class="text-white" id="profileDate">Date</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Quick Action Links -->
+            <div class="col-md-7 mb-4">
+                <div class="card glass-card p-4 border border-secondary shadow-sm h-100 d-flex flex-column justify-content-center gap-4">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <a href="order-history.html" class="text-decoration-none">
+                                <div class="p-4 bg-dark border border-secondary rounded-4 text-center hover-white transition-all">
+                                    <div class="text-info mb-3">
+                                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    </div>
+                                    <h5 class="fw-bold text-white mb-1">Order Registry</h5>
+                                    <small class="text-white-50">Track & check past transactions</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="cart.html" class="text-decoration-none">
+                                <div class="p-4 bg-dark border border-secondary rounded-4 text-center hover-white transition-all">
+                                    <div class="text-info mb-3">
+                                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                    </div>
+                                    <h5 class="fw-bold text-white mb-1">Shopping Cart</h5>
+                                    <small class="text-white-50">Manage items ready to sync</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="wishlist.html" class="text-decoration-none">
+                                <div class="p-4 bg-dark border border-secondary rounded-4 text-center hover-white transition-all">
+                                    <div class="text-info mb-3">
+                                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    </div>
+                                    <h5 class="fw-bold text-white mb-1">Wishlist Registry</h5>
+                                    <small class="text-white-50">Review favorite concepts</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="products.html" class="text-decoration-none">
+                                <div class="p-4 bg-dark border border-secondary rounded-4 text-center hover-white transition-all">
+                                    <div class="text-info mb-3">
+                                        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                                    </div>
+                                    <h5 class="fw-bold text-white mb-1">Fashion Store</h5>
+                                    <small class="text-white-50">Browse all clothes & shoes</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const user = getStoredUser();
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            document.getElementById("profileName").textContent = user.name;
+            document.getElementById("profileEmail").textContent = user.email;
+            document.getElementById("profileId").textContent = `AUR-${String(user.id).padStart(4, '0')}`;
+            
+            // Set Initials
+            const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase();
+            document.getElementById("profileInitials").textContent = initials.substring(0, 2);
+
+            // Set Registration Date
+            const regDate = new Date(user.created_at).toLocaleDateString();
+            document.getElementById("profileDate").textContent = regDate;
+        });
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>

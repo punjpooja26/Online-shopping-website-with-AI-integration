@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Collections — Aura Fashion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container py-5 my-3 flex-grow-1">
+        <div class="row">
+            <!-- Left Side: Filter Panel -->
+            <div class="col-lg-3 mb-4">
+                <div class="card glass-card p-4 border border-secondary shadow-sm">
+                    <h4 class="fw-bold text-white mb-4 text-uppercase tracking-wider">Catalog Filters</h4>
+                    
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Text Search</label>
+                        <input type="text" id="filterSearch" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="Search keywords...">
+                    </div>
+
+                    <!-- Category Selector -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Category</label>
+                        <select id="filterCategory" class="form-select bg-dark text-white border-secondary rounded-pill">
+                            <option value="">All Categories</option>
+                            <!-- Dynamically loaded -->
+                        </select>
+                    </div>
+
+                    <!-- Subcategory Selector -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Subcategory Type</label>
+                        <select id="filterSubcategory" class="form-select bg-dark text-white border-secondary rounded-pill">
+                            <option value="">All Types</option>
+                            <option value="T-Shirt">T-Shirts</option>
+                            <option value="Shirt">Shirts</option>
+                            <option value="Jeans">Jeans</option>
+                            <option value="Jacket">Jackets</option>
+                            <option value="Ethnic">Ethnic Wear</option>
+                            <option value="Saree">Sarees</option>
+                            <option value="Kurti">Kurtis</option>
+                            <option value="Dress">Dresses</option>
+                            <option value="Sneaker">Sneakers</option>
+                            <option value="Running">Running Shoes</option>
+                            <option value="Formal">Formal Shoes</option>
+                            <option value="Heels">Heels</option>
+                            <option value="Sandals">Sandals</option>
+                            <option value="Watch">Watches</option>
+                            <option value="Bag">Bags</option>
+                            <option value="Sunglasses">Sunglasses</option>
+                            <option value="Wallet">Wallets</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Price Limit ($)</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" id="filterMinPrice" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="Min" min="0">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" id="filterMaxPrice" class="form-control bg-dark text-white border-secondary rounded-pill" placeholder="Max" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ratings Filter -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Minimum Rating</label>
+                        <select id="filterRating" class="form-select bg-dark text-white border-secondary rounded-pill">
+                            <option value="">Any Rating</option>
+                            <option value="4">4 ★ & Above</option>
+                            <option value="3">3 ★ & Above</option>
+                            <option value="2">2 ★ & Above</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Filter -->
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 text-uppercase" style="font-size: 0.75rem; font-weight: 600;">Sort By</label>
+                        <select id="filterSort" class="form-select bg-dark text-white border-secondary rounded-pill">
+                            <option value="">Latest Arrival</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="rating_desc">Top Rated</option>
+                        </select>
+                    </div>
+
+                    <button id="applyFiltersBtn" class="btn btn-info w-100 rounded-pill text-dark fw-bold mb-2">Apply Filters</button>
+                    <button id="clearFiltersBtn" class="btn btn-outline-secondary w-100 rounded-pill">Reset Filters</button>
+                </div>
+            </div>
+
+            <!-- Right Side: Products Grid -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-white-50" id="resultsCount">Loading products...</span>
+                </div>
+
+                <div class="row g-4" id="productsGrid">
+                    <!-- Products dynamically loaded -->
+                </div>
+
+                <!-- Pagination Controls -->
+                <nav class="mt-5" aria-label="Products pagination">
+                    <ul class="pagination justify-content-center" id="paginationControls">
+                        <!-- Pagination pages loaded -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        let currentPage = 1;
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            // Load Categories in Filter Dropdown
+            try {
+                const catRes = await fetch("/api/categories/");
+                if (catRes.ok) {
+                    const categories = await catRes.json();
+                    const filterCat = document.getElementById("filterCategory");
+                    categories.forEach(cat => {
+                        filterCat.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                }
+            } catch (err) {
+                console.error("Categories dropdown error:", err);
+            }
+
+            // Read URL Params (in case clicked from home page category tiles or search)
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialCategory = urlParams.get("category_id");
+            const initialSearch = urlParams.get("search");
+
+            if (initialCategory) {
+                document.getElementById("filterCategory").value = initialCategory;
+            }
+            if (initialSearch) {
+                document.getElementById("filterSearch").value = initialSearch;
+            }
+
+            // Fetch and render initial page
+            fetchProducts();
+
+            // Bind triggers
+            document.getElementById("applyFiltersBtn").addEventListener("click", () => {
+                currentPage = 1;
+                fetchProducts();
+            });
+
+            document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+                document.getElementById("filterSearch").value = "";
+                document.getElementById("filterCategory").value = "";
+                document.getElementById("filterMinPrice").value = "";
+                document.getElementById("filterMaxPrice").value = "";
+                document.getElementById("filterRating").value = "";
+                document.getElementById("filterSort").value = "";
+                currentPage = 1;
+                fetchProducts();
+            });
+        });
+
+        async function fetchProducts() {
+            const rawSearch = document.getElementById("filterSearch").value;
+            const subcat = document.getElementById("filterSubcategory").value;
+            let search = rawSearch;
+            if (subcat) {
+                search = search ? `${search} ${subcat}` : subcat;
+            }
+            
+            const category_id = document.getElementById("filterCategory").value;
+            const min_price = document.getElementById("filterMinPrice").value;
+            const max_price = document.getElementById("filterMaxPrice").value;
+            const min_rating = document.getElementById("filterRating").value;
+            const sort_by = document.getElementById("filterSort").value;
+
+            // Build query params
+            let params = new URLSearchParams();
+            if (search) params.append("search", search);
+            if (category_id) params.append("category_id", category_id);
+            if (min_price) params.append("min_price", min_price);
+            if (max_price) params.append("max_price", max_price);
+            if (min_rating) params.append("min_rating", min_rating);
+            if (sort_by) params.append("sort_by", sort_by);
+            params.append("page", currentPage);
+            params.append("limit", 9); // 9 products per page
+
+            const grid = document.getElementById("productsGrid");
+            grid.innerHTML = `
+                <div class="text-center w-100 py-5">
+                    <div class="spinner-border text-info" role="status"></div>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`/api/products/?${params.toString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById("resultsCount").textContent = `Showing ${data.products.length} of ${data.total} products`;
+                    
+                    grid.innerHTML = "";
+                    if (data.products.length === 0) {
+                        grid.innerHTML = `
+                            <div class="col-12 text-center py-5">
+                                <h3>No garments matched your filter conditions.</h3>
+                                <p class="text-white-50">Try clearing filters or looking for another term.</p>
+                            </div>
+                        `;
+                        document.getElementById("paginationControls").innerHTML = "";
+                        return;
+                    }
+
+                    data.products.forEach(p => {
+                        const stars = "★".repeat(Math.round(p.rating)) + "☆".repeat(5-Math.round(p.rating));
+                        const hasDiscount = p.original_price && p.original_price > p.price;
+                        const discountBadge = hasDiscount ? `<span class="badge bg-danger position-absolute top-0 start-0 m-3 z-1">${Math.round((1 - p.price / p.original_price) * 100)}% OFF</span>` : "";
+                        const originalPriceHTML = hasDiscount ? `<del class="text-white-50 small me-2">$${p.original_price.toFixed(2)}</del>` : "";
+                        const stockBadge = p.stock <= 5 && p.stock > 0 ? `<span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 z-1">Only ${p.stock} left</span>` : (p.stock === 0 ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-3 z-1">Out of Stock</span>` : "");
+                        
+                        grid.innerHTML += `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card card-product h-100 rounded-4 overflow-hidden border-0 shadow-sm position-relative">
+                                ${discountBadge}
+                                ${stockBadge}
+                                <div class="img-hover-container" style="height: 220px; background-color: #020617;">
+                                    <a href="product-details.html?id=${p.id}">
+                                        <img src="${p.image_url}" class="card-img-top h-100 w-100 object-fit-contain p-3" alt="${p.name}">
+                                    </a>
+                                </div>
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <span class="text-white-50 font-monospace mb-1" style="font-size: 0.75rem;">${p.category ? p.category.name.toUpperCase() : "APPAREL"}</span>
+                                    <h5 class="card-title fw-bold text-white mb-2" style="font-size: 1.05rem;"><a href="product-details.html?id=${p.id}" class="text-decoration-none hover-white">${p.name}</a></h5>
+                                    <div class="text-warning mb-3" style="font-size: 0.85rem;">${stars} <span class="text-white-50">(${p.rating})</span></div>
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <div>
+                                            ${originalPriceHTML}
+                                            <span class="fs-5 fw-bold text-info">$${p.price.toFixed(2)}</span>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-info btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" onclick="window.location.href='product-details.html?id=${p.id}'" title="Quick View">
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" onclick="addToWishlist(${p.id})">
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+
+                    renderPagination(data.pages);
+                }
+            } catch (err) {
+                console.error("Products fetching error:", err);
+            }
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById("paginationControls");
+            container.innerHTML = "";
+            if (totalPages <= 1) return;
+
+            // Previous
+            container.innerHTML += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <button class="page-link bg-dark border-secondary text-white" onclick="changePage(${currentPage - 1})">&laquo;</button>
+                </li>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                container.innerHTML += `
+                    <li class="page-item ${currentPage === i ? 'active' : ''}">
+                        <button class="page-link ${currentPage === i ? 'bg-info border-info text-dark fw-bold' : 'bg-dark border-secondary text-white'}" onclick="changePage(${i})">${i}</button>
+                    </li>
+                `;
+            }
+
+            // Next
+            container.innerHTML += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <button class="page-link bg-dark border-secondary text-white" onclick="changePage(${currentPage + 1})">&raquo;</button>
+                </li>
+            `;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            fetchProducts();
+            window.scrollTo(0, 0);
+        }
+
+        async function addToCart(productId) {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+            try {
+                const res = await fetch("/api/cart/", {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+                if (res.ok) {
+                    alert("Added to shopping cart!");
+                    updateBadges();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Cart adding failed.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure adding to cart.");
+            }
+        }
+
+        async function addToWishlist(productId) {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+            try {
+                const res = await fetch(`/api/wishlist/${productId}`, {
+                    method: "POST",
+                    headers: getHeaders()
+                });
+                if (res.ok) {
+                    alert("Garment saved to wishlist!");
+                    updateBadges();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Wishlist addition failed.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure saving wishlist.");
+            }
+        }
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>

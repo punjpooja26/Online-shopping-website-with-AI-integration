@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garment Details — Aura Fashion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .size-pill, .color-pill {
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: all 0.2s ease;
+        }
+        .size-pill:hover, .color-pill:hover {
+            border-color: #00f2fe;
+            background-color: rgba(0, 242, 254, 0.05);
+        }
+        .size-pill.active {
+            background-color: #00f2fe;
+            color: #020617 !important;
+            border-color: #00f2fe;
+            font-weight: bold;
+        }
+        .color-pill.active {
+            box-shadow: 0 0 0 2px #020617, 0 0 0 4px #00f2fe;
+        }
+        .thumbnail-img {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+            height: 70px;
+            object-fit: contain;
+            background-color: #020617;
+        }
+        .thumbnail-img:hover, .thumbnail-img.active {
+            opacity: 1;
+            border-color: #00f2fe !important;
+        }
+        .search-suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .suggestion-item {
+            transition: background 0.2s ease;
+        }
+        .suggestion-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5 my-3 flex-grow-1" id="detailsWrapper">
+        <!-- Loading Spinner -->
+        <div class="text-center py-5" id="detailsLoader">
+            <div class="spinner-border text-info" role="status"></div>
+            <p class="text-white-50 mt-2">Connecting to garment registry node...</p>
+        </div>
+
+        <div class="row d-none" id="detailsContent">
+            <!-- Left Column: Product Image & Gallery -->
+            <div class="col-md-5 mb-4">
+                <div class="card glass-card p-4 border border-secondary shadow d-flex align-items-center justify-content-center overflow-hidden position-relative" id="mainImageContainer" style="height: 380px; background-color: #020617; cursor: zoom-in;">
+                    <img src="" id="prodImage" class="img-fluid h-100 object-fit-contain" alt="Product Image" style="transform-origin: center; transition: transform 0.2s ease-out;">
+                </div>
+                <!-- Thumbnail Row -->
+                <div class="row g-2 mt-3" id="imageGalleryRow">
+                    <!-- Dynamic thumbnails -->
+                </div>
+            </div>
+
+            <!-- Right Column: Product Info -->
+            <div class="col-md-7 mb-4">
+                <div class="ps-md-4">
+                    <span class="badge bg-info text-dark text-uppercase tracking-wider mb-2" id="prodCategory">Category</span>
+                    <h1 class="fw-bold text-white mb-2" id="prodName">Product Name</h1>
+                    
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="text-warning" id="prodStars"></div>
+                        <span class="text-white-50" id="prodRatingVal">(0.0)</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="fs-2 fw-bold text-info" id="prodPrice">$0.00</span>
+                        <del class="fs-4 text-white-50 d-none" id="prodOriginalPrice">$0.00</del>
+                        <span class="badge bg-danger d-none" id="prodDiscountBadge">Discount</span>
+                    </div>
+
+                    <p class="text-white-50 mb-4" id="prodDescription" style="line-height: 1.6;">Product Description goes here...</p>
+
+                    <!-- Sizes Selector -->
+                    <div class="mb-3 d-none" id="sizesSection">
+                        <label class="form-label text-white-50 text-uppercase small" style="font-weight: 600;">Select Size</label>
+                        <div class="d-flex gap-2" id="sizesRow"></div>
+                    </div>
+
+                    <!-- Colors Selector -->
+                    <div class="mb-4 d-none" id="colorsSection">
+                        <label class="form-label text-white-50 text-uppercase small" style="font-weight: 600;">Select Color</label>
+                        <div class="d-flex gap-2" id="colorsRow"></div>
+                    </div>
+
+                    <hr class="border-secondary mb-4">
+
+                    <!-- Actions -->
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="d-flex align-items-center bg-dark border border-secondary rounded-pill overflow-hidden" style="width: 130px;">
+                            <button class="btn btn-dark text-white border-0 py-2" id="btnDecQty" style="width: 40px;">-</button>
+                            <span class="flex-grow-1 text-center fw-bold text-white" id="qtyCounter">1</span>
+                            <button class="btn btn-dark text-white border-0 py-2" id="btnIncQty" style="width: 40px;">+</button>
+                        </div>
+                        <span class="text-white-50" id="prodStock">Stock availability...</span>
+                    </div>
+
+                    <div class="d-flex gap-3 mb-5">
+                        <button class="btn btn-info btn-lg rounded-pill px-5 text-dark fw-bold" id="btnAddToCart">
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline-danger btn-lg rounded-pill px-4" id="btnAddToWishlist">
+                            Save Wishlist
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPECIFICATIONS SECTION -->
+        <div class="row mt-5 border-top border-secondary pt-5 d-none" id="specsSection">
+            <div class="col-lg-8 mx-auto">
+                <h3 class="fw-bold text-white text-uppercase tracking-wider mb-4">Specifications</h3>
+                <div class="card glass-card p-4 border border-secondary shadow-sm">
+                    <div class="row g-3" id="specsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RELATED PRODUCTS SECTION -->
+        <div class="row mt-5 border-top border-secondary pt-5 d-none" id="relatedSection">
+            <div class="col-12">
+                <h3 class="fw-bold text-white text-uppercase tracking-wider mb-4 text-center">Related Garments</h3>
+                <div class="row g-4" id="relatedContainer"></div>
+            </div>
+        </div>
+
+        <!-- RECENTLY VIEWED SECTION -->
+        <div class="row mt-5 border-top border-secondary pt-5 d-none" id="recentlyViewedSection">
+            <div class="col-12">
+                <h3 class="fw-bold text-white text-uppercase tracking-wider mb-4 text-center">Recently Viewed</h3>
+                <div class="row g-4" id="recentlyViewedContainer"></div>
+            </div>
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="row mt-5 border-top border-secondary pt-5 d-none" id="reviewsSection">
+            <div class="col-lg-8 mx-auto">
+                <h3 class="fw-bold text-white text-uppercase tracking-wider mb-4">Customer Reviews</h3>
+
+                <!-- Submit Review Form -->
+                <div class="card glass-card p-4 border border-secondary mb-5" id="addReviewCard">
+                    <h5 class="fw-bold text-info mb-3">Write a Review</h5>
+                    <form id="reviewForm" onsubmit="event.preventDefault();">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Rating (1 to 5 Stars)</label>
+                            <select class="form-select bg-dark text-white border-secondary rounded-pill" id="reviewRating" required>
+                                <option value="5">5 Stars — Excellent</option>
+                                <option value="4">4 Stars — Very Good</option>
+                                <option value="3">3 Stars — Good</option>
+                                <option value="2">2 Stars — Fair</option>
+                                <option value="1">1 Star — Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Comment</label>
+                            <textarea class="form-control bg-dark text-white border-secondary rounded-4" id="reviewComment" rows="3" placeholder="Tell us about the fabric fit, quality, and style..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-info rounded-pill px-4" id="submitReviewBtn">Submit Feedback</button>
+                    </form>
+                </div>
+
+                <!-- Reviews Feed -->
+                <div class="d-flex flex-column gap-3" id="reviewsFeed">
+                    <!-- Dynamic review cards populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        let product = null;
+        let productId = null;
+        let selectedQty = 1;
+        let selectedSize = "";
+        let selectedColor = "";
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            productId = urlParams.get("id");
+
+            if (!productId) {
+                document.getElementById("detailsWrapper").innerHTML = `
+                    <div class="alert alert-danger text-center">Product parameters are missing.</div>
+                `;
+                return;
+            }
+
+            // Sync reviews card visibility based on auth
+            if (!getToken()) {
+                document.getElementById("addReviewCard").innerHTML = `
+                    <div class="p-3 text-center text-white-50">
+                        Please <a href="login.html" class="text-info">Login</a> to write a rating feedback review.
+                    </div>
+                `;
+            }
+
+            await loadProductDetails();
+            await loadProductReviews();
+            await loadRelatedProducts();
+            await loadRecentlyViewed();
+
+            // Bind quantity modifiers
+            document.getElementById("btnDecQty").addEventListener("click", () => {
+                if (selectedQty > 1) {
+                    selectedQty--;
+                    document.getElementById("qtyCounter").textContent = selectedQty;
+                }
+            });
+
+            document.getElementById("btnIncQty").addEventListener("click", () => {
+                if (product && selectedQty < product.stock) {
+                    selectedQty++;
+                    document.getElementById("qtyCounter").textContent = selectedQty;
+                } else {
+                    alert("Requested quantity matches total warehouse inventory limits.");
+                }
+            });
+
+            // Bind adding triggers
+            document.getElementById("btnAddToCart").addEventListener("click", addToCart);
+            document.getElementById("btnAddToWishlist").addEventListener("click", addToWishlist);
+
+            // Bind review submit
+            const reviewForm = document.getElementById("reviewForm");
+            if (reviewForm) {
+                reviewForm.addEventListener("submit", submitReview);
+            }
+            
+            // Initialize image hover zoom
+            setupZoomEffect();
+        });
+
+        function setupZoomEffect() {
+            const mainImgContainer = document.getElementById("mainImageContainer");
+            const mainImg = document.getElementById("prodImage");
+            if (mainImgContainer && mainImg) {
+                mainImgContainer.addEventListener("mousemove", (e) => {
+                    const rect = mainImgContainer.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    mainImg.style.transformOrigin = `${x}% ${y}%`;
+                    mainImg.style.transform = "scale(1.8)";
+                });
+                mainImgContainer.addEventListener("mouseleave", () => {
+                    mainImg.style.transformOrigin = "center";
+                    mainImg.style.transform = "scale(1)";
+                });
+            }
+        }
+
+        async function loadProductDetails() {
+            try {
+                const res = await fetch(`/api/products/${productId}`);
+                if (res.ok) {
+                    product = await res.json();
+                    
+                    // Track recently viewed product ID
+                    trackRecentlyViewed(product.id);
+                    
+                    document.getElementById("prodImage").src = product.image_url;
+                    document.getElementById("prodImage").alt = product.name;
+                    document.getElementById("prodCategory").textContent = product.category ? product.category.name : "Apparel";
+                    document.getElementById("prodName").textContent = product.name;
+                    
+                    const starsHTML = "★".repeat(Math.round(product.rating)) + "☆".repeat(5-Math.round(product.rating));
+                    document.getElementById("prodStars").textContent = starsHTML;
+                    document.getElementById("prodRatingVal").textContent = `(${product.rating.toFixed(1)} / 5)`;
+                    
+                    document.getElementById("prodPrice").textContent = `$${product.price.toFixed(2)}`;
+                    
+                    // Discount and Original Price setup
+                    if (product.original_price && product.original_price > product.price) {
+                        const discountPercent = Math.round((1 - product.price / product.original_price) * 100);
+                        document.getElementById("prodOriginalPrice").textContent = `$${product.original_price.toFixed(2)}`;
+                        document.getElementById("prodOriginalPrice").classList.remove("d-none");
+                        document.getElementById("prodDiscountBadge").textContent = `${discountPercent}% OFF`;
+                        document.getElementById("prodDiscountBadge").classList.remove("d-none");
+                    }
+                    
+                    document.getElementById("prodDescription").textContent = product.description;
+                    
+                    // Sizes loader
+                    if (product.sizes) {
+                        const sizesSection = document.getElementById("sizesSection");
+                        const sizesRow = document.getElementById("sizesRow");
+                        sizesRow.innerHTML = "";
+                        product.sizes.split(",").forEach(size => {
+                            sizesRow.innerHTML += `<div class="size-pill py-2 px-3 border rounded text-white text-center" onclick="selectSize(this, '${size}')" style="width: 50px; font-size: 0.85rem;">${size}</div>`;
+                        });
+                        sizesSection.classList.remove("d-none");
+                    }
+                    
+                    // Colors loader
+                    if (product.colors) {
+                        const colorsSection = document.getElementById("colorsSection");
+                        const colorsRow = document.getElementById("colorsRow");
+                        colorsRow.innerHTML = "";
+                        product.colors.split(",").forEach(color => {
+                            colorsRow.innerHTML += `<div class="color-pill p-3 border rounded-circle" title="${color}" onclick="selectColor(this, '${color}')" style="background-color: ${color.toLowerCase().replace(' ', '')}; width: 28px; height: 28px;"></div>`;
+                        });
+                        colorsSection.classList.remove("d-none");
+                    }
+                    
+                    // Image Gallery Thumbnails
+                    const galleryRow = document.getElementById("imageGalleryRow");
+                    galleryRow.innerHTML = "";
+                    const images = [product.image_url];
+                    if (product.gallery_images) {
+                        product.gallery_images.split(",").forEach(img => {
+                            if (img.trim() && !images.includes(img.trim())) images.push(img.trim());
+                        });
+                    }
+                    images.forEach((imgUrl, idx) => {
+                        galleryRow.innerHTML += `
+                        <div class="col-3">
+                            <img src="${imgUrl}" class="card p-2 border border-secondary rounded-3 thumbnail-img w-100 ${idx === 0 ? 'active border-info' : ''}" onclick="changeMainImage(this, '${imgUrl}')">
+                        </div>
+                        `;
+                    });
+                    
+                    // Specifications loader
+                    if (product.specifications) {
+                        const specsSection = document.getElementById("specsSection");
+                        const specsGrid = document.getElementById("specsGrid");
+                        specsGrid.innerHTML = "";
+                        product.specifications.split(";").forEach(pair => {
+                            const [key, val] = pair.split(":");
+                            if (key && val) {
+                                specsGrid.innerHTML += `
+                                <div class="col-sm-6">
+                                    <div class="d-flex border-bottom border-secondary pb-2">
+                                        <span class="text-white-50 w-50" style="font-size: 0.9rem;">${key.trim()}</span>
+                                        <strong class="text-white w-50" style="font-size: 0.9rem;">${val.trim()}</strong>
+                                    </div>
+                                </div>
+                                `;
+                            }
+                        });
+                        specsSection.classList.remove("d-none");
+                    }
+                    
+                    const stock = product.stock;
+                    const stockEl = document.getElementById("prodStock");
+                    if (stock > 0) {
+                        stockEl.className = "text-success fw-bold";
+                        stockEl.textContent = `In Stock (${stock} items remaining)`;
+                        document.getElementById("btnAddToCart").removeAttribute("disabled");
+                    } else {
+                        stockEl.className = "text-danger fw-bold";
+                        stockEl.textContent = "Out of Stock / Sold Out";
+                        document.getElementById("btnAddToCart").setAttribute("disabled", "true");
+                    }
+
+                    // Reveal components
+                    document.getElementById("detailsLoader").classList.add("d-none");
+                    document.getElementById("detailsContent").classList.remove("d-none");
+                    document.getElementById("reviewsSection").classList.remove("d-none");
+                } else {
+                    document.getElementById("detailsWrapper").innerHTML = `
+                        <div class="alert alert-danger text-center">Failed to locate product coordinates.</div>
+                    `;
+                }
+            } catch (e) {
+                console.error("Details loading failed:", e);
+            }
+        }
+
+        function changeMainImage(thumbEl, imgUrl) {
+            document.querySelectorAll(".thumbnail-img").forEach(el => el.classList.remove("active", "border-info"));
+            thumbEl.classList.add("active", "border-info");
+            document.getElementById("prodImage").src = imgUrl;
+        }
+
+        function selectSize(element, size) {
+            document.querySelectorAll(".size-pill").forEach(el => el.classList.remove("active"));
+            element.classList.add("active");
+            selectedSize = size;
+        }
+
+        function selectColor(element, color) {
+            document.querySelectorAll(".color-pill").forEach(el => el.classList.remove("active"));
+            element.classList.add("active");
+            selectedColor = color;
+        }
+
+        async function loadProductReviews() {
+            try {
+                const res = await fetch(`/api/reviews/${productId}`);
+                if (res.ok) {
+                    const reviews = await res.json();
+                    const feed = document.getElementById("reviewsFeed");
+                    feed.innerHTML = "";
+                    
+                    if (reviews.length === 0) {
+                        feed.innerHTML = `
+                            <p class="text-white-50 text-center py-4">No reviews recorded yet. Be the first to share your opinion!</p>
+                        `;
+                        return;
+                    }
+
+                    reviews.forEach(r => {
+                        const stars = "★".repeat(r.rating) + "☆".repeat(5-r.rating);
+                        const reviewerName = r.user ? r.user.name : "Aura Buyer";
+                        const reviewDate = new Date(r.created_at).toLocaleDateString();
+                        
+                        feed.innerHTML += `
+                        <div class="card glass-card p-4 border border-secondary shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-white">${reviewerName}</span>
+                                <small class="text-white-50">${reviewDate}</small>
+                            </div>
+                            <div class="text-warning mb-2" style="font-size: 0.85rem;">${stars}</div>
+                            <p class="text-white-50 mb-0">${r.comment || ""}</p>
+                        </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Reviews loader error:", err);
+            }
+        }
+
+        async function loadRelatedProducts() {
+            if (!product) return;
+            try {
+                const res = await fetch(`/api/products/?category_id=${product.category_id}&limit=4`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById("relatedContainer");
+                    container.innerHTML = "";
+                    
+                    // Filter out current product
+                    const related = data.products.filter(p => p.id !== product.id).slice(0, 4);
+                    if (related.length === 0) return;
+                    
+                    related.forEach(p => {
+                        const stars = "★".repeat(Math.round(p.rating)) + "☆".repeat(5-Math.round(p.rating));
+                        container.innerHTML += `
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-product h-100 rounded-4 overflow-hidden border-0 shadow-sm">
+                                <div style="height: 180px; background-color: #020617;">
+                                    <a href="product-details.html?id=${p.id}">
+                                        <img src="${p.image_url}" class="card-img-top h-100 w-100 object-fit-contain p-3" alt="${p.name}">
+                                    </a>
+                                </div>
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <h6 class="card-title fw-bold text-white mb-2 text-truncate"><a href="product-details.html?id=${p.id}" class="text-decoration-none hover-white">${p.name}</a></h6>
+                                    <div class="text-warning mb-2" style="font-size: 0.8rem;">${stars}</div>
+                                    <div class="mt-auto fw-bold text-info">$${p.price.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+                    document.getElementById("relatedSection").classList.remove("d-none");
+                }
+            } catch (e) {
+                console.error("Related products fetch failed:", e);
+            }
+        }
+
+        function trackRecentlyViewed(id) {
+            let list = JSON.parse(localStorage.getItem("aura_recently_viewed") || "[]");
+            list = list.filter(item => item !== id);
+            list.unshift(id);
+            list = list.slice(0, 4); // Keep last 4
+            localStorage.setItem("aura_recently_viewed", JSON.stringify(list));
+        }
+
+        async function loadRecentlyViewed() {
+            let list = JSON.parse(localStorage.getItem("aura_recently_viewed") || "[]");
+            // Filter out current product details
+            list = list.filter(item => item !== parseInt(productId));
+            if (list.length === 0) return;
+
+            const container = document.getElementById("recentlyViewedContainer");
+            container.innerHTML = "";
+            
+            for (let id of list) {
+                try {
+                    const res = await fetch(`/api/products/${id}`);
+                    if (res.ok) {
+                        const p = await res.json();
+                        const stars = "★".repeat(Math.round(p.rating)) + "☆".repeat(5-Math.round(p.rating));
+                        container.innerHTML += `
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-product h-100 rounded-4 overflow-hidden border-0 shadow-sm">
+                                <div style="height: 180px; background-color: #020617;">
+                                    <a href="product-details.html?id=${p.id}">
+                                        <img src="${p.image_url}" class="card-img-top h-100 w-100 object-fit-contain p-3" alt="${p.name}">
+                                    </a>
+                                </div>
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <h6 class="card-title fw-bold text-white mb-2 text-truncate"><a href="product-details.html?id=${p.id}" class="text-decoration-none hover-white">${p.name}</a></h6>
+                                    <div class="text-warning mb-2" style="font-size: 0.8rem;">${stars}</div>
+                                    <div class="mt-auto fw-bold text-info">$${p.price.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                } catch (e) {
+                    // Fail silently
+                }
+            }
+            if (container.children.length > 0) {
+                document.getElementById("recentlyViewedSection").classList.remove("d-none");
+            }
+        }
+
+        async function addToCart() {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+            if (product.sizes && !selectedSize) {
+                alert("Please select a size first!");
+                return;
+            }
+            if (product.colors && !selectedColor) {
+                alert("Please select a color first!");
+                return;
+            }
+            
+            // Add visitor analytics action
+            logVisitorActivity("add_to_cart");
+            
+            try {
+                const res = await fetch("/api/cart/", {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({ product_id: parseInt(productId), quantity: selectedQty })
+                });
+                if (res.ok) {
+                    alert("Synced items to cart drawer!");
+                    updateBadges();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Cart adding failed.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure adding to cart.");
+            }
+        }
+
+        async function addToWishlist() {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+            try {
+                const res = await fetch(`/api/wishlist/${productId}`, {
+                    method: "POST",
+                    headers: getHeaders()
+                });
+                if (res.ok) {
+                    alert("Added to wishlist registry!");
+                    updateBadges();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Wishlist adding failed.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure saving wishlist.");
+            }
+        }
+
+        async function submitReview() {
+            const rating = document.getElementById("reviewRating").value;
+            const comment = document.getElementById("reviewComment").value;
+            
+            try {
+                const res = await fetch("/api/reviews/", {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({ product_id: parseInt(productId), rating: parseInt(rating), comment })
+                });
+                if (res.ok) {
+                    alert("Feedback review recorded successfully!");
+                    document.getElementById("reviewComment").value = "";
+                    await loadProductDetails(); // Refresh average rating
+                    await loadProductReviews(); // Reload list
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Review submission failed.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure submitting review.");
+            }
+        }
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>

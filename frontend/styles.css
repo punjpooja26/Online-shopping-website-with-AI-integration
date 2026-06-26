@@ -1,0 +1,251 @@
+/* ==========================================================================
+   Aura Full-Stack E-Commerce — Client Stylesheet
+   ========================================================================== */
+
+/* Design Variables */
+:root {
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --accent-info: #00f2fe;
+    --accent-glow: rgba(0, 242, 254, 0.15);
+    
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Global Adjustments */
+body {
+    background-color: var(--bg-darker);
+    color: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Outfit', -apple-system, sans-serif;
+}
+
+/* Custom styles for components */
+.hover-white:hover {
+    color: #ffffff !important;
+}
+
+.card-product {
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: var(--transition-smooth);
+}
+.card-product:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-info);
+    box-shadow: 0 10px 25px var(--accent-glow);
+}
+
+/* Glassmorphism panel cards */
+.glass-card {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+}
+
+/* Dynamic floating chatbot visual styling */
+.chat-bubble {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--accent-info);
+    color: #020617;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1050;
+    transition: var(--transition-smooth);
+    box-shadow: 0 8px 30px rgba(0, 242, 254, 0.4);
+}
+.chat-bubble:hover {
+    transform: scale(1.1) rotate(15deg);
+    filter: brightness(1.1);
+    box-shadow: 0 12px 35px rgba(0, 242, 254, 0.6);
+}
+
+.chat-window {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 380px;
+    height: 520px;
+    z-index: 1050;
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px !important;
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #090e1a;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+.chat-body::-webkit-scrollbar {
+    width: 4px;
+}
+.chat-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.message {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    max-width: 85%;
+    line-height: 1.4;
+    position: relative;
+    animation: fadeIn 0.2s ease;
+}
+.bot-message {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #f8fafc;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+.user-message {
+    background: linear-gradient(135deg, var(--accent-info) 0%, #00b4d8 100%);
+    color: #020617;
+    align-self: flex-end;
+    font-weight: 500;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15);
+}
+
+/* Form Styles */
+.lead-form-container {
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.lead-form-container input {
+    font-size: 0.85rem !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+.lead-form-container input:focus {
+    border-color: var(--accent-info) !important;
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.2) !important;
+}
+
+/* Typing Indicator Animation */
+.typing span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: rgba(248, 250, 252, 0.5);
+    border-radius: 50%;
+    margin-right: 3px;
+    animation: bounce 1.3s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.15s; }
+.typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Image Hover Zoom catalog effects */
+.img-hover-container {
+    overflow: hidden;
+    position: relative;
+}
+.img-hover-container img {
+    transition: transform 0.5s ease;
+}
+.img-hover-container:hover img {
+    transform: scale(1.08);
+}
+
+/* Search Suggestions Dropdown Styling */
+.search-suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.suggestion-item {
+    transition: background 0.2s ease;
+}
+.suggestion-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* Category Grid Centering / Alignment */
+#categoriesContainer {
+    justify-content: center;
+}
+
+/* Floating Voice Agent Styles */
+.voice-widget-btn:hover {
+    transform: scale(1.08);
+    border-color: var(--accent-info) !important;
+    box-shadow: 0 8px 25px rgba(0, 242, 254, 0.4) !important;
+}
+
+.voice-status-panel {
+    border-radius: 12px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    transition: var(--transition-smooth);
+    animation: fadeIn 0.2s ease;
+}
+
+/* Pulsing Voice Waves animation */
+.voice-waves span {
+    width: 3px;
+    height: 100%;
+    background-color: var(--accent-info);
+    border-radius: 2px;
+    animation: voiceWavePulse 0.8s ease-in-out infinite alternate;
+}
+
+.voice-waves span.bar-1 { animation-delay: 0.1s; height: 60%; }
+.voice-waves span.bar-2 { animation-delay: 0.3s; height: 100%; }
+.voice-waves span.bar-3 { animation-delay: 0.2s; height: 75%; }
+.voice-waves span.bar-4 { animation-delay: 0.4s; height: 50%; }
+
+@keyframes voiceWavePulse {
+    0% { transform: scaleY(0.4); }
+    100% { transform: scaleY(1.2); }
+}
+

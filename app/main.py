@@ -24,7 +24,8 @@ from app.routers import (
     reviews,
     admin,
     chatbot,
-    analytics
+    analytics,
+    voice
 )
 
 # ==========================================================================
@@ -236,6 +237,7 @@ app.include_router(reviews.router)
 app.include_router(admin.router)
 app.include_router(chatbot.router)
 app.include_router(analytics.router)
+app.include_router(voice.router)
 
 # ==========================================================================
 # MOCK DATABASE SEEDING ON STARTUP

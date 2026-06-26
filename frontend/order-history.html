@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History — Aura Fashion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container py-5 my-3 flex-grow-1" id="historyWrapper">
+        <h1 class="fw-bold text-white text-uppercase tracking-wider mb-5">Order Registry History</h1>
+
+        <!-- Loading Spinner -->
+        <div class="text-center py-5" id="historyLoader">
+            <div class="spinner-border text-info" role="status"></div>
+            <p class="text-white-50 mt-2">Syncing past orders registry...</p>
+        </div>
+
+        <div class="d-none d-flex flex-column gap-4" id="historyContent">
+            <!-- Accordion container loaded dynamically -->
+            <div class="accordion accordion-dark" id="ordersAccordion">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Empty History Message -->
+        <div class="text-center py-5 d-none" id="emptyHistoryMessage">
+            <div class="text-muted mb-4">
+                <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <h3>No orders located in the registry.</h3>
+            <p class="text-white-50 mb-4">You have not finalized any transaction orders yet.</p>
+            <a href="products.html" class="btn btn-info rounded-pill px-5 text-dark fw-bold">Shop Collections</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        window.addEventListener("DOMContentLoaded", async () => {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            await loadOrderHistory();
+        });
+
+        async function loadOrderHistory() {
+            const acc = document.getElementById("ordersAccordion");
+            try {
+                const res = await fetch("/api/orders/", { headers: getHeaders() });
+                if (res.ok) {
+                    const orders = await res.json();
+                    
+                    document.getElementById("historyLoader").classList.add("d-none");
+                    
+                    if (orders.length === 0) {
+                        document.getElementById("historyContent").classList.add("d-none");
+                        document.getElementById("emptyHistoryMessage").classList.remove("d-none");
+                        return;
+                    }
+
+                    document.getElementById("emptyHistoryMessage").classList.add("d-none");
+                    document.getElementById("historyContent").classList.remove("d-none");
+                    
+                    acc.innerHTML = "";
+                    orders.forEach((order, idx) => {
+                        const orderDate = new Date(order.created_at).toLocaleDateString();
+                        const orderTime = new Date(order.created_at).toLocaleTimeString();
+                        
+                        // Set status badge colors
+                        let badgeColor = "bg-warning text-dark";
+                        if (order.status === "Shipped") badgeColor = "bg-primary text-white";
+                        else if (order.status === "Delivered") badgeColor = "bg-success text-white";
+                        else if (order.status === "Cancelled") badgeColor = "bg-danger text-white";
+
+                        let itemsListHTML = "";
+                        order.items.forEach(item => {
+                            const prodName = item.product ? item.product.name : "Unregistered Garment";
+                            const prodImg = item.product ? item.product.image_url : "assets/aura_sneaker.png";
+                            itemsListHTML += `
+                            <div class="d-flex align-items-center justify-content-between border-bottom border-secondary py-3" style="border-bottom-style: dotted !important;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded bg-dark border border-secondary p-1" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                        <img src="${prodImg}" class="img-fluid h-100 w-100 object-fit-contain" alt="">
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-white">${prodName}</div>
+                                        <small class="text-white-50">$${item.price.toFixed(2)} x ${item.quantity}</small>
+                                    </div>
+                                </div>
+                                <span class="fw-bold text-info">$${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                            `;
+                        });
+
+                        acc.innerHTML += `
+                        <div class="accordion-item glass-card border border-secondary mb-3 shadow-sm" style="overflow: hidden; background-color: rgba(15,23,42,0.5) !important;">
+                            <h2 class="accordion-header" id="heading-${order.id}">
+                                <button class="accordion-button collapsed bg-dark text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${order.id}" aria-expanded="false" aria-controls="collapse-${order.id}" style="box-shadow: none;">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between w-100 pe-3 gap-2">
+                                        <div class="text-start">
+                                            <strong class="text-info font-monospace">AUR-${order.id.toString().padStart(4, "0")}</strong>
+                                            <span class="text-white-50 ms-2" style="font-size: 0.85rem;">Synced: ${orderDate}</span>
+                                        </div>
+                                        <div class="text-end d-flex align-items-center gap-3">
+                                            <span class="badge ${badgeColor}">${order.status}</span>
+                                            <strong class="text-white">$${order.total_amount.toFixed(2)}</strong>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse-${order.id}" class="accordion-collapse collapse" aria-labelledby="heading-${order.id}" data-bs-parent="#ordersAccordion">
+                                <div class="accordion-body bg-dark text-white p-4">
+                                    <h6 class="text-info text-uppercase tracking-wider fw-bold mb-3">Purchased Garments</h6>
+                                    <div class="d-flex flex-column gap-2 mb-4">
+                                        ${itemsListHTML}
+                                    </div>
+
+                                    <h6 class="text-info text-uppercase tracking-wider fw-bold mb-2">Delivery Details</h6>
+                                    <div class="p-3 bg-secondary rounded-4 border border-secondary text-white-50" style="font-size: 0.9rem;">
+                                        <strong>Address:</strong><br>
+                                        ${order.shipping_address}<br>
+                                        <strong class="mt-2 d-inline-block">Payment Method:</strong> ${order.payment ? order.payment.payment_method : "COD"} 
+                                        (${order.payment ? order.payment.status : "Pending"})
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+                } else {
+                    document.getElementById("historyWrapper").innerHTML = `
+                        <div class="alert alert-danger text-center">Failed to fetch order history.</div>
+                    `;
+                }
+            } catch (e) {
+                console.error("Order history failed:", e);
+                document.getElementById("historyWrapper").innerHTML = `
+                    <div class="alert alert-danger text-center">Connection to API endpoint failed.</div>
+                `;
+            }
+        }
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>

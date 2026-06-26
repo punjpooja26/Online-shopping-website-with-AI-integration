@@ -423,26 +423,26 @@ def query_chatbot(
                 faqs_text += f"Question: {faq.question}\nAnswer: {faq.answer}\n\n"
 
             system_instruction = (
-                "You are Aura, the expert, helpful, and sleek digital fashion AI assistant for Aura Streetwear Store. "
-                "Your tone is modern, friendly, and highly knowledgeable in techwear and streetwear fashion.\n\n"
-                "Here is the real-time product catalog of our store. Use ONLY these products when recommending items. "
-                "Recommend outfit coordinates (matching sets) and explain how items layer together:\n"
+                "You are Aura, the premier AI fashion stylist and customer support assistant for Aura Streetwear Store. "
+                "Your tone is sleek, confident, and expert in techwear/streetwear.\n\n"
+                "YOUR CORE MISSIONS:\n"
+                "1. Respond directly, strongly, and accurately to any customer questions about products, sizing, coordinates, shipping, cart, checkout, returns, and loyalty membership.\n"
+                "2. Sizing advice: Techwear fits are often oversized. Standard fit is true-to-size, and utility items are tailored for layering.\n"
+                "3. Layering & styling: Suggest sets of matching coordinates (e.g., matching a jacket with ripstop cargo pants or tactical bags).\n\n"
+                "REAL-TIME CATALOG INVENTORY:\n"
                 f"{catalog_text}\n"
-                "DYNAMIC STORE POLICIES & FAQs:\n"
+                "DYNAMIC STORE POLICIES & FAQS:\n"
                 f"{faqs_text}\n"
-                "CONTEXT OF THE USER YOU ARE TALKING TO:\n"
+                "CUSTOMER PROFILE:\n"
                 f"- Name: {lead.name}\n"
                 f"- Email: {lead.email}\n"
                 f"- Phone: {lead.phone}\n\n"
-                "IMPORTANT GUIDELINES:\n"
-                "1. When recommending or mentioning a product, you MUST format it as a clickable HTML link in your response. "
-                "For example: 'I recommend the <a href=\"product-details.html?id=1\" class=\"text-info\">Luna Windbreaker Jacket</a> which is currently in stock!' "
-                "Always use the exact format: <a href=\"product-details.html?id=PRODUCT_ID\" class=\"text-info\">PRODUCT_NAME</a>. This is very important so the user can click and view it!\n"
-                "2. Provide detailed, expressive, and informative styling responses. Give layering advice (e.g. inner, outer layers, coordinates) and suggest sizing details where appropriate. Use HTML line breaks (<br>) and bold text to structure your message beautifully. Do not use markdown headers or markdown bullet lists, keep formatting clean for the chat window.\n"
-                "3. If they ask to add a product to their cart, guide them to click on the product link and use the 'Add to Cart' button on that page.\n"
-                "4. Always end your response with an engaging follow-up question related to their styling, preferences, or sizing needs to keep the conversation going.\n"
-                "5. Do not mention API keys or environment variables.\n"
-                "6. Answer all fashion, catalog, cart, and policy questions using the above store information."
+                "IMPORTANT FORMATTING RULES:\n"
+                "1. Product Links: You MUST format any product recommendation as a clickable HTML link. "
+                "Format: <a href=\"product-details.html?id=PRODUCT_ID\" class=\"text-info\">PRODUCT_NAME</a>. Do not forget this!\n"
+                "2. Structure: Use HTML line breaks (<br>) and bold tag (<strong>) for spacing and formatting. Do not use markdown bullet lists (-), use HTML list tags or bullet characters (•).\n"
+                "3. Cart/Checkout: If asked to add to cart or buy, instruct them to click on the product link and use the 'Add to Cart' button on the detail page.\n"
+                "4. Conversation: Always end with a styling follow-up question."
             )
         
             # Fetch chat history (limit to last 12 messages for token efficiency)
@@ -484,7 +484,20 @@ def query_chatbot(
             
             # Fallback to Rule-Based Engine
             if not reply:
-                if any(keyword in msg_lower for keyword in ["recommend", "suggest", "preferences", "what should i buy", "recommendation"]):
+                # 1. Intercept Greetings and Acknowledgments first
+                greetings = ["hi", "hello", "hey", "hola", "yo", "greetings", "good morning", "good afternoon", "good evening", "howdy"]
+                acknowledgments = ["ok", "okay", "thanks", "thank you", "sure", "cool", "fine", "awesome", "perfect", "great"]
+                clean_msg = re.sub(r'[^\w\s]', '', msg_lower).strip()
+                
+                # Check if it's just a greeting or acknowledgment
+                is_greeting = clean_msg in greetings
+                is_acknowledgment = clean_msg in acknowledgments
+                
+                if is_greeting:
+                    reply = f"Hello <strong>{lead.name}</strong>! Welcome to Aura Streetwear Store. I am your personal AI fashion stylist.<br><br>How can I help you style your outfit today? You can ask me to <strong>recommend garments</strong>, check <strong>sizing</strong>, or answer questions about <strong>shipping</strong> and <strong>returns</strong>."
+                elif is_acknowledgment:
+                    reply = "Awesome! Let me know if you need styling coordination, sizing advice, or help with checkouts. I'm here to help!"
+                elif any(keyword in msg_lower for keyword in ["recommend", "suggest", "preferences", "what should i buy", "recommendation", "outfit", "style", "layer"]):
                     cat_filter = None
                     category_name = ""
                     if "men" in msg_lower:
@@ -511,14 +524,24 @@ def query_chatbot(
                         category_name = "Best Rated Items"
                     
                     if db_products:
-                        reply = f"Based on your preferences, here are our top recommendations in <strong>{category_name}</strong>:<br>"
+                        reply = f"Based on your styling request, here are our top recommendations in <strong>{category_name}</strong>:<br>"
                         for p in db_products:
                             orig_price_str = f" <del class='text-muted'>${p.original_price:.2f}</del>" if p.original_price else ""
                             discount_badge = " <span class='badge bg-danger'>Sale</span>" if p.original_price and p.original_price > p.price else ""
                             reply += f"• <strong><a href='product-details.html?id={p.id}' class='text-info'>{p.name}</a></strong> - ${p.price:.2f}{orig_price_str}{discount_badge} ({p.rating} ★)<br>"
-                        reply += "<br>You can click on the product links to view details or add them directly to your cart!<br><br>Would you like coordinates suggestions for any of these items?"
+                        reply += "<br>We recommend layering utility jackets with high-mobility ripstop cargos for the ultimate techwear aesthetic. Would you like styling details for any of these fits?"
                     else:
                         reply = "We currently don't have matched products, but you can browse all items in our Shop catalog. What specific size or color are you looking for?"
+                elif any(re.search(rf"\b{kw}\b", msg_lower) for kw in ["size", "sizes", "sizing", "fit", "fits", "measurement", "measurements", "guide"]):
+                    reply = "Aura garments are engineered for utility streetwear layering. Jackets generally feature a modern, slightly oversized fit, while cargo pants run true-to-size with adjustable drawcords. We recommend checking the sizing charts on each individual product page. What size do you normally wear?"
+                elif any(re.search(rf"\b{kw}\b", msg_lower) for kw in ["shipping", "delivery", "cost", "costs", "ship", "ships", "deliver", "delivers", "arrive", "arrives"]):
+                    reply = "We offer free shipping on all orders over $100! Standard domestic delivery typically takes 3-5 business days. You can track your shipment node directly from your user dashboard. Do you need shipping details for a specific order?"
+                elif any(re.search(rf"\b{kw}\b", msg_lower) for kw in ["return", "returns", "refund", "refunds", "exchange", "exchanges", "policy"]):
+                    reply = "We offer a 30-day return policy on all unworn garments in original condition. Return shipping coordinates and labels can be requested from your profile page, and refunds are processed back to your original payment node within 5 business days. Do you need help returning a purchase?"
+                elif any(re.search(rf"\b{kw}\b", msg_lower) for kw in ["cart", "checkout", "purchase", "buy", "order", "add"]):
+                    reply = "To purchase items or manage your cart, simply click on any product link (such as the <a href='product-details.html?id=1' class='text-info'>Luna Windbreaker Jacket</a>), select your preferred size and color on the details page, and click the <strong>Add to Cart</strong> button. Once ready, you can click on the shopping bag icon in the navbar to proceed to checkout. Can I recommend some coordinates to add?"
+                elif any(re.search(rf"\b{kw}\b", msg_lower) for kw in ["contact", "email", "phone", "support", "help", "address", "membership", "loyalty"]):
+                    reply = "You can contact the Aura design team directly at <strong>support@aurastreetwear.com</strong> or call us at <strong>+1 (555) AURA-FIT</strong>. As a Priority Styling member, your registered phone number connects you directly to our personal fashion consultants. How can I help you regarding support today?"
                 elif any(keyword in msg_lower for keyword in ["what products", "list products", "show products", "all products", "available products", "what do you sell"]):
                     products = db.query(models.Product).limit(5).all()
                     if not products:
@@ -526,8 +549,8 @@ def query_chatbot(
                     else:
                         reply = "Here are some of our premium items:<br>"
                         for p in products:
-                            reply += f"• <strong>{p.name}</strong> - ${p.price:.2f} ({p.stock} in stock)<br>"
-                        reply += "<br>You can ask 'details about [Product Name]' to learn more specs! What kind of apparel or accessories interests you today?"
+                            reply += f"• <strong><a href='product-details.html?id={p.id}' class='text-info'>{p.name}</a></strong> - ${p.price:.2f} ({p.stock} in stock)<br>"
+                        reply += "<br>You can ask 'details about [Product Name]' to learn more specifications! What kind of streetwear style are you looking for?"
                 elif any(kw in msg_lower for kw in ["details about", "tell me about", "info on", "show me", "look for"]):
                     prod_name = None
                     for kw in ["details about", "tell me about", "info on", "show me", "look for"]:
@@ -558,23 +581,33 @@ def query_chatbot(
                     # Match query against database FAQ questions/keywords
                     matched_faq = None
                     for faq in faqs_db:
-                        # Direct phrase matching
-                        if faq.question.lower() in msg_lower or msg_lower in faq.question.lower():
-                            matched_faq = faq
-                            break
+                        faq_q_lower = faq.question.lower()
+                        clean_faq_q = re.sub(r'[^\w\s]', '', faq_q_lower).strip()
+                        clean_user_msg = re.sub(r'[^\w\s]', '', msg_lower).strip()
                         
-                        # Keyword matching
-                        if faq.keywords:
-                            kw_list = [k.strip().lower() for k in faq.keywords.split(",") if len(k.strip()) > 2]
-                            if any(kw in msg_lower for kw in kw_list):
+                        if clean_faq_q in clean_user_msg or clean_user_msg in clean_faq_q:
+                            if len(clean_user_msg) >= 4 or clean_user_msg == clean_faq_q:
                                 matched_faq = faq
+                                break
+                        
+                        if faq.keywords:
+                            kw_list = [k.strip().lower() for k in faq.keywords.split(",") if len(k.strip()) >= 3]
+                            for kw in kw_list:
+                                if re.search(rf"\b{re.escape(kw)}\b", msg_lower):
+                                    matched_faq = faq
+                                    break
+                            if matched_faq:
                                 break
                     
                     if matched_faq:
                         reply = matched_faq.answer + "<br><br>Does this help with your question? Let me know if you need sizing or styling styling coordination!"
                     else:
-                        clean_query = msg.strip()
-                        words = [w for w in msg_lower.split() if len(w) > 2]
+                        # Strip punctuation for cleaner NLP database search
+                        clean_query = re.sub(r'[^\w\s]', ' ', msg_lower).strip()
+                        clean_query = re.sub(r'\s+', ' ', clean_query)
+                        
+                        # Generate normalized words list without punctuation
+                        words = [w.strip() for w in re.split(r'[^\w]', msg_lower) if len(w.strip()) > 2]
                         product = None
                         if clean_query:
                             product = db.query(models.Product).filter(models.Product.name.ilike(f"%{clean_query}%")).first()
@@ -617,8 +650,8 @@ def query_chatbot(
                                 else:
                                     reply = f"I found the <strong>{category.name}</strong> category, but we don't have any products in it right now. What other kinds of techwear coordinates are you planning?"
                             else:
-                                reply = "I'm sorry, I didn't quite catch that. You can ask me to **recommend products**, list our active **categories**, " \
-                                        "or ask about **shipping**, **returns**, **sizing**, or **discounts**! What styling coordinates can I help you find?"
+                                reply = "I'm sorry, I didn't quite catch that. You can ask me to <strong>recommend products</strong>, list our active <strong>categories</strong>, " \
+                                        "or ask about <strong>shipping</strong>, <strong>returns</strong>, <strong>sizing</strong>, <strong>contacting support</strong>, or <strong>cart checkout</strong>! What styling coordinates can I help you find?"
 
     # 5. Save Bot message to ChatHistory database
     bot_chat = models.ChatHistory(

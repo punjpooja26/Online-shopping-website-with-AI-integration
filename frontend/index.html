@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Fashion — Home of Cyber Streetwear</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- HERO CAROUSEL BANNER SECTION -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active" style="height: 60vh; min-height: 400px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/aura_sneaker.png') center/contain no-repeat, #020617;">
+                <div class="carousel-caption d-flex flex-column justify-content-center h-100 text-start ps-5">
+                    <span class="badge bg-info text-dark text-uppercase tracking-wider mb-2" style="width: fit-content; font-size: 0.8rem; font-weight: 700;">Seasonal Release</span>
+                    <h1 class="display-3 fw-bold text-white mb-3">CYBERNETIC WEAR</h1>
+                    <p class="lead text-white-50 mb-4" style="max-width: 500px;">Woven mesh running sneakers and high-mobility Ripstop cargo pants designed for utility grid movement.</p>
+                    <a href="products.html" class="btn btn-info btn-lg rounded-pill px-4 text-dark fw-bold" style="width: fit-content;">Explore Collection</a>
+                </div>
+            </div>
+            <div class="carousel-item" style="height: 60vh; min-height: 400px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/luna_jacket.png') center/contain no-repeat, #020617;">
+                <div class="carousel-caption d-flex flex-column justify-content-center h-100 text-start ps-5">
+                    <span class="badge bg-danger text-uppercase tracking-wider mb-2" style="width: fit-content; font-size: 0.8rem; font-weight: 700;">Premium Layering</span>
+                    <h1 class="display-3 fw-bold text-white mb-3">LUNA WINDBREAKER</h1>
+                    <p class="lead text-white-50 mb-4" style="max-width: 500px;">Waterproof Gore-Tex storm shell featuring geometric seams and signature iridescent violet highlights.</p>
+                    <a href="products.html" class="btn btn-info btn-lg rounded-pill px-4 text-dark fw-bold" style="width: fit-content;">Shop Outerwear</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- PRODUCT CATEGORIES SECTION -->
+    <section class="container py-5 my-3">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-uppercase tracking-wide text-info">Shop Categories</h2>
+            <p class="text-white-50">Filter premium apparel coordinates by catalog sectors.</p>
+        </div>
+        <div class="row g-4" id="categoriesContainer">
+            <!-- Dynamically populated in JavaScript -->
+        </div>
+    </section>
+
+    <!-- FEATURED PRODUCTS SECTION -->
+    <section class="container py-5 border-top border-secondary my-3">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-bold text-uppercase tracking-wide text-info mb-1">Featured Garments</h2>
+                <p class="text-white-50 mb-0">High-end coordinates recently synced to our registry.</p>
+            </div>
+            <a href="products.html" class="btn btn-outline-info rounded-pill px-4">See All Products</a>
+        </div>
+        <div class="row g-4" id="featuredContainer">
+            <!-- Loading Spinner -->
+            <div class="text-center w-100 py-5">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="text-white-50 mt-2">Connecting to grid registry...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW ARRIVALS SECTION -->
+    <section class="container py-5 border-top border-secondary my-3">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-bold text-uppercase tracking-wide text-info mb-1">New Arrivals</h2>
+                <p class="text-white-50 mb-0">Fresh telemetry releases added to the fashion grid.</p>
+            </div>
+            <a href="products.html" class="btn btn-outline-info rounded-pill px-4">Browse Newest</a>
+        </div>
+        <div class="row g-4" id="newArrivalsContainer">
+            <!-- Loading Spinner -->
+            <div class="text-center w-100 py-5">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="text-white-50 mt-2">Loading new coordinates...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BEST SELLERS SECTION -->
+    <section class="container py-5 border-top border-secondary my-3">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="fw-bold text-uppercase tracking-wide text-info mb-1">Best Sellers</h2>
+                <p class="text-white-50 mb-0">Top-rated items favored by the streetwear coordinate network.</p>
+            </div>
+            <a href="products.html?sort_by=rating_desc" class="btn btn-outline-info rounded-pill px-4">Top Rated</a>
+        </div>
+        <div class="row g-4" id="bestSellersContainer">
+            <!-- Loading Spinner -->
+            <div class="text-center w-100 py-5">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="text-white-50 mt-2">Aggregating telemetry ratings...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="container py-5 border-top border-secondary my-3">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-uppercase tracking-wide text-info">AURA RESPONSES</h2>
+            <p class="text-white-50">Testimonials from coordinates around the world registry.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card glass-card p-4 h-100">
+                    <div class="mb-3 text-warning">★★★★★</div>
+                    <p class="text-white-50 flex-grow-1">"The Aura Knit Sneaker is incredibly lightweight. The teal glow gets attention everywhere I go. Absolute peak performance techwear."</p>
+                    <div class="d-flex align-items-center gap-3 mt-3">
+                        <div class="rounded-circle bg-info text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">KN</div>
+                        <div>
+                            <div class="fw-bold text-white">Karan Nair</div>
+                            <small class="text-white-50">Verified Buyer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card p-4 h-100">
+                    <div class="mb-3 text-warning">★★★★★</div>
+                    <p class="text-white-50 flex-grow-1">"Luna Windbreaker handles storms beautifully. The oversized fit is perfect for layering hoodies underneath. Totally weatherproof!"</p>
+                    <div class="d-flex align-items-center gap-3 mt-3">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">AS</div>
+                        <div>
+                            <div class="fw-bold text-white">Ananya Sen</div>
+                            <small class="text-white-50">Verified Buyer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card p-4 h-100">
+                    <div class="mb-3 text-warning">★★★★☆</div>
+                    <p class="text-white-50 flex-grow-1">"High-mobility Ripstop cargo pants are highly durable. Magnetic modular straps make quick adjustments very satisfying. Highly recommended."</p>
+                    <div class="d-flex align-items-center gap-3 mt-3">
+                        <div class="rounded-circle bg-success text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">RS</div>
+                        <div>
+                            <div class="fw-bold text-white">Rohan Singh</div>
+                            <small class="text-white-50">Verified Buyer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER SUBSCRIPTION SECTION -->
+    <section class="container py-5 border-top border-secondary my-3 mb-5">
+        <div class="card glass-card p-5 text-center">
+            <h2 class="fw-bold text-uppercase tracking-wide text-info mb-2">Sync Registry Updates</h2>
+            <p class="text-white-50 mb-4 mx-auto" style="max-width: 500px;">Subscribe to our newsletter registry to receive telemetry codes and notification alerts for new release cycles.</p>
+            <form id="newsletterForm" class="d-flex justify-content-center mx-auto" style="max-width: 450px;" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <input type="email" class="form-control bg-dark text-white border-secondary rounded-start-pill ps-4" placeholder="Enter your email coords..." required>
+                    <button class="btn btn-info text-dark fw-bold rounded-end-pill px-4" type="submit">Subscribe</button>
+                </div>
+            </form>
+            <div class="text-success mt-3 d-none" id="newsSuccess">Email registered successfully. Telemetry sync complete!</div>
+        </div>
+    </section>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Layout Manager -->
+    <script src="js/custom.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        // Fetch categories and featured products on startup
+        window.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Fetch Categories
+                const catRes = await fetch("/api/categories/");
+                if (catRes.ok) {
+                    const categories = await catRes.json();
+                    const container = document.getElementById("categoriesContainer");
+                    container.innerHTML = "";
+                    categories.forEach(cat => {
+                        container.innerHTML += `
+                        <div class="col-6 col-lg">
+                            <a href="products.html?category_id=${cat.id}" class="text-decoration-none">
+                                <div class="card glass-card text-center p-4 hover-white h-100 transition-all border border-secondary">
+                                    <div class="text-info mb-3">
+                                        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                    </div>
+                                    <h5 class="fw-bold mb-1 text-white">${cat.name}</h5>
+                                    <small class="text-white-50">${cat.description || "Collection"}</small>
+                                </div>
+                            </a>
+                        </div>
+                        `;
+                    });
+                }
+
+                // Helper to build product card HTML
+                function buildProductCard(p) {
+                    const stars = "★".repeat(Math.round(p.rating)) + "☆".repeat(5-Math.round(p.rating));
+                    const hasDiscount = p.original_price && p.original_price > p.price;
+                    const discountBadge = hasDiscount ? `<span class="badge bg-danger position-absolute top-0 start-0 m-3 z-1">${Math.round((1 - p.price / p.original_price) * 100)}% OFF</span>` : "";
+                    const originalPriceHTML = hasDiscount ? `<del class="text-white-50 small me-2">$${p.original_price.toFixed(2)}</del>` : "";
+                    const stockBadge = p.stock <= 5 && p.stock > 0 ? `<span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3 z-1">Only ${p.stock} left</span>` : (p.stock === 0 ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-3 z-1">Out of Stock</span>` : "");
+                    
+                    return `
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card card-product h-100 rounded-4 overflow-hidden border-0 position-relative shadow-sm">
+                            ${discountBadge}
+                            ${stockBadge}
+                            <div class="img-hover-container" style="height: 250px; background-color: #020617;">
+                                <a href="product-details.html?id=${p.id}">
+                                    <img src="${p.image_url || 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500'}" class="card-img-top h-100 w-100 object-fit-contain p-3" alt="${p.name}">
+                                </a>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <span class="text-white-50 font-monospace mb-1" style="font-size: 0.8rem;">${p.category ? p.category.name.toUpperCase() : "APPAREL"}</span>
+                                <h5 class="card-title fw-bold text-white mb-2" style="font-size: 1.05rem;"><a href="product-details.html?id=${p.id}" class="text-decoration-none hover-white">${p.name}</a></h5>
+                                <div class="text-warning mb-3" style="font-size: 0.9rem;">${stars} <span class="text-white-50">(${p.rating})</span></div>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <div>
+                                        ${originalPriceHTML}
+                                        <span class="fs-5 fw-bold text-info">$${p.price.toFixed(2)}</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-info rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" onclick="window.location.href='product-details.html?id=${p.id}'" title="Quick View">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </button>
+                                        <button class="btn btn-info rounded-circle p-2 d-flex align-items-center justify-content-center text-dark" style="width: 38px; height: 38px;" onclick="quickAddToCart(${p.id})" title="Add to Cart" ${p.stock === 0 ? 'disabled' : ''}>
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // Fetch Featured Products
+                const prodRes = await fetch("/api/products/?limit=4");
+                if (prodRes.ok) {
+                    const data = await prodRes.json();
+                    const container = document.getElementById("featuredContainer");
+                    container.innerHTML = "";
+                    data.products.forEach(p => {
+                        container.innerHTML += buildProductCard(p);
+                    });
+                }
+
+                // Fetch New Arrivals
+                const newRes = await fetch("/api/products/?limit=4&page=2");
+                if (newRes.ok) {
+                    const data = await newRes.json();
+                    const container = document.getElementById("newArrivalsContainer");
+                    container.innerHTML = "";
+                    data.products.forEach(p => {
+                        container.innerHTML += buildProductCard(p);
+                    });
+                }
+
+                // Fetch Best Sellers
+                const bestRes = await fetch("/api/products/?limit=4&sort_by=rating_desc");
+                if (bestRes.ok) {
+                    const data = await bestRes.json();
+                    const container = document.getElementById("bestSellersContainer");
+                    container.innerHTML = "";
+                    data.products.forEach(p => {
+                        container.innerHTML += buildProductCard(p);
+                    });
+                }
+            } catch (err) {
+                console.error("Home details fetching failure: ", err);
+            }
+
+            // Newsletter submit binding
+            document.getElementById("newsletterForm").addEventListener("submit", () => {
+                document.getElementById("newsSuccess").classList.remove("d-none");
+                document.getElementById("newsletterForm").reset();
+            });
+        });
+
+        // Quick add to cart
+        async function quickAddToCart(productId) {
+            if (!getToken()) {
+                window.location.href = "login.html";
+                return;
+            }
+            try {
+                const res = await fetch("/api/cart/", {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({ product_id: productId, quantity: 1 })
+                });
+                if (res.ok) {
+                    alert("Added to cart registry!");
+                    updateBadges();
+                } else {
+                    const err = await res.json();
+                    alert(err.detail || "Failed to add item to cart.");
+                }
+            } catch (e) {
+                alert("Network connectivity failure adding to cart.");
+            }
+        }
+    </script>
+
+    <!-- HubSpot Embed Code -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/246521700.js"></script>
+
+</body>
+</html>
